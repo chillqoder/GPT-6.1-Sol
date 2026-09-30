@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#eae7df">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='%23292c27' d='M3 27 16 4l13 23Z'/%3E%3C/svg%3E">
+  <title>Kage — The Silent Ronin</title>
+  <style>
+    :root{--paper:#eae7df;--ink:#292c27;--muted:#797b71;--line:#cbcbbf;--accent:#9a4d32}
+    *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:Arial,Helvetica,sans-serif;overflow:hidden}button{font:inherit;color:inherit}button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:5px}
+    #viewport{position:absolute;inset:72px 0 76px 270px;touch-action:none}canvas{display:block;width:100%;height:100%;outline:none}
+    header{position:absolute;z-index:2;top:0;left:0;right:0;height:88px;display:flex;align-items:center;justify-content:space-between;padding:0 46px}
+    .brand{display:flex;align-items:center;gap:12px;font-size:13px;font-weight:700;letter-spacing:3px}.brand svg{width:29px;height:29px}.edition{font-family:monospace;font-size:10px;letter-spacing:1.6px;color:var(--muted)}.edition span{color:var(--ink);margin-right:16px}
+    .intro{position:absolute;z-index:2;left:46px;top:24%;width:260px;pointer-events:none}.eyebrow{font:10px monospace;letter-spacing:2px;color:var(--accent);display:flex;align-items:center;gap:10px}.eyebrow:before{content:"";width:20px;height:1px;background:var(--accent)}h1{font-family:Georgia,'Times New Roman',serif;font-size:87px;font-weight:400;letter-spacing:-5px;line-height:1;margin:24px 0 16px}.subtitle{font-size:11px;letter-spacing:3.7px;font-weight:600}.description{font-family:Georgia,'Times New Roman',serif;font-size:15px;line-height:1.8;color:#6b6e63;margin:27px 0 30px;max-width:224px}.rule{width:35px;height:1px;background:var(--line);margin-bottom:23px}.tags{font:9px monospace;letter-spacing:1px;line-height:2.1;color:var(--muted)}.kanji{font-family:serif;position:absolute;left:46px;bottom:137px;font-size:56px;color:#d0d0c5;letter-spacing:8px;pointer-events:none}
+    .scene-label{position:absolute;right:47px;top:117px;z-index:2;text-align:right;pointer-events:none;font:9px monospace;letter-spacing:1.5px;color:var(--muted);line-height:1.9}.scene-label strong{color:var(--ink);font-weight:400}.live-dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:#75826b;margin-right:7px;vertical-align:1px}
+    .toolbar{position:absolute;z-index:3;bottom:107px;left:calc(50% + 135px);transform:translateX(-50%);display:flex;gap:5px;border:1px solid #d3d2c8;padding:5px;background:#f3f1e9d9;border-radius:9px;box-shadow:0 4px 18px #42453606;backdrop-filter:blur(12px)}.tool{border:0;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;height:36px;padding:0 13px;border-radius:5px;font-size:10px;white-space:nowrap;transition:background .2s}.tool:hover{background:#e0dfd5}.tool[aria-pressed=true]{background:#30352e;color:#f4f2e9}.tool svg{height:14px;width:14px;stroke:currentColor;fill:none;stroke-width:1.5}.divider{width:1px;background:#d4d4ca;margin:7px 3px}
+    .help{position:absolute;z-index:2;left:calc(50% + 135px);bottom:82px;transform:translateX(-50%);font:9px monospace;letter-spacing:.4px;color:#888a80;white-space:nowrap}.help span{padding:0 8px;color:#b1b2a7}
+    footer{position:absolute;bottom:0;left:46px;right:46px;height:65px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;font:9px monospace;letter-spacing:1.4px;color:var(--muted)}footer .collection{color:var(--ink)}footer .number{color:var(--accent);margin-right:12px}footer .right{letter-spacing:.4px}.loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:1;font:10px monospace;letter-spacing:2px;color:var(--muted);transition:opacity .4s;pointer-events:none}.loading.hidden{opacity:0}.loading.error{padding:30px;text-align:center;line-height:2;letter-spacing:0;max-width:480px;margin:auto}
+    .hint{position:absolute;right:47px;bottom:130px;writing-mode:vertical-rl;font:9px monospace;letter-spacing:3px;color:#898b7e;pointer-events:none}
+    @media(min-width:1600px){.intro{left:70px;width:300px}h1{font-size:110px}.description{font-size:17px;max-width:250px}#viewport{left:310px}.toolbar,.help{left:calc(50% + 155px)}}
+    @media(max-width:900px){header{padding:0 26px}.intro{left:26px;width:190px;top:23%}h1{font-size:65px}.subtitle{font-size:9px;letter-spacing:2px}.description{font-size:13px;max-width:173px}#viewport{left:175px}.toolbar,.help{left:calc(50% + 87px)}.scene-label{right:26px}.kanji{left:26px}footer{left:26px;right:26px}.hint{display:none}}
+    @media(max-width:600px){header{height:66px;padding:0 22px}.brand{font-size:10px;letter-spacing:2px;gap:9px}.brand svg{width:24px}.edition{font-size:8px;letter-spacing:.6px}.edition span{display:none}.intro{top:82px;left:23px;width:auto}.eyebrow{font-size:8px;letter-spacing:1.2px}h1{font-size:49px;letter-spacing:-2px;margin:11px 0 7px}.subtitle{font-size:8px;letter-spacing:2px}.description,.rule,.tags,.kanji,.scene-label{display:none}#viewport{inset:157px 0 126px}.toolbar{left:50%;bottom:82px;padding:4px;gap:2px}.tool{height:34px;padding:0 10px;font-size:9px}.help{left:50%;bottom:62px;font-size:8px}.help .pan{display:none}footer{left:22px;right:22px;height:45px;font-size:8px;letter-spacing:.5px}footer .right{font-size:7px}.loading{font-size:9px}}
+    @media(max-height:620px) and (min-width:601px){header{height:60px}#viewport{inset:60px 0 100px 190px}.intro{top:94px}h1{font-size:56px}.description,.rule,.tags,.kanji{display:none}.scene-label{top:79px}.toolbar{bottom:65px;left:calc(50% + 95px)}.help{bottom:49px;left:calc(50% + 95px)}footer{height:43px}}
+    @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+  </style>
+  <script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.170.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.170.0/examples/jsm/"}}</script>
+</head>
+<body>
+  <header><div class="brand"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 24 16 4l13 20H3Z" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="m8 24 8-12 8 12M3 28h26" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>FORM & FABLE</div><div class="edition"><span>CHARACTER STUDIES</span> VOL. 001 / 2026</div></header>
+  <main>
+    <section class="intro" aria-label="Character introduction"><div class="eyebrow">THE WANDERING SPIRIT</div><h1>Kage.</h1><div class="subtitle">THE SILENT RONIN</div><p class="description">A little warrior. An old soul.<br>Bone beneath black lacquer,<br>carrying stories without a sound.</p><div class="rule"></div><div class="tags">鬼武者 / SKELETON SAMURAI<br>OBSIDIAN · BONE · BRONZE</div></section>
+    <div class="kanji" aria-hidden="true">影</div>
+    <div class="scene-label"><strong><span class="live-dot"></span>LIVE SCULPTURE</strong><br><span id="view-label">THREE-QUARTER VIEW</span></div>
+    <div id="viewport" aria-label="Interactive 3D skeleton samurai; drag to rotate and scroll to zoom"><div class="loading" id="loading" role="status">CRAFTING THE WARRIOR…</div></div>
+    <div class="toolbar" role="group" aria-label="Model controls">
+      <button class="tool" id="rotate" aria-pressed="false" title="Turntable rotation"><svg viewBox="0 0 20 20"><path d="M16 7a6.5 6.5 0 1 0 .3 6M16 3v4h-4"/></svg>Rotate</button>
+      <button class="tool" id="motion" aria-pressed="true" title="Toggle breathing animation"><svg viewBox="0 0 20 20"><path d="M2 10h3l2-6 4 12 2-6h5"/></svg>Idle</button>
+      <div class="divider"></div>
+      <button class="tool" id="wireframe" aria-pressed="false" title="Inspect the procedural geometry"><svg viewBox="0 0 20 20"><path d="m10 2 7 4v8l-7 4-7-4V6l7-4ZM3 6l7 4 7-4M10 10v8M10 2v8"/></svg>Mesh</button>
+      <button class="tool" id="reset" title="Reset camera and controls"><svg viewBox="0 0 20 20"><path d="M4 7a6 6 0 1 1-1 6M4 3v4h4"/></svg>Reset</button>
+    </div>
+    <div class="help">DRAG to orbit<span>·</span>SCROLL to zoom<span class="pan">· &nbsp; RIGHT-DRAG to pan</span></div>
+    <div class="hint">A STUDY IN STILLNESS</div>
+  </main>
+  <footer><div class="collection"><span class="number">01 /</span> THE RONIN COLLECTION</div><div class="right">Sculpted in code. Made to explore.</div></footer>
+  <script type="module">
+    // The entire sculpture is geometry. No photographs, textures, or model assets.
+    const loading = document.querySelector('#loading');
+    try {
+      const THREE = await import('three');
+      const { OrbitControls } = await import('three/addons/controls/OrbitControls.js');
+      const viewport = document.querySelector('#viewport');
+      const scene = new THREE.Scene();
+      const renderer = new THREE.WebGLRenderer({antialias:true,alpha:true});
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.VSMShadowMap;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.05;
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      viewport.appendChild(renderer.domElement);
+      renderer.domElement.setAttribute('aria-label','Kage, a three-dimensional skeleton samurai');
+      renderer.domElement.setAttribute('tabindex','0');
+
+      const camera = new THREE.PerspectiveCamera(32,1,.1,80);
+      const controls = new OrbitControls(camera,renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = .065;
+      controls.minDistance = 5.0;
+      controls.maxDistance = 17;
+      controls.maxPolarAngle = Math.PI*.52;
+      controls.minPolarAngle = Math.PI*.14;
+      controls.autoRotateSpeed = 1.3;
+      controls.target.set(0,2.18,0);
+
+      // Studio lights and a geometry-generated environment provide lacquer reflections.
+      scene.add(new THREE.HemisphereLight(0xf8f6eb,0x706a59,1.65));
+      const key = new THREE.DirectionalLight(0xfff0d7,2.6);
+      key.position.set(-3,10,4); key.castShadow = true;
+      key.shadow.mapSize.set(2048,2048);
+      Object.assign(key.shadow.camera,{left:-4,right:4,top:6,bottom:-3,near:.1,far:22});
+      key.shadow.normalBias = .025; key.shadow.bias = -.0003;
+      key.shadow.radius = 4; key.shadow.blurSamples = 8; scene.add(key);
+      const fill = new THREE.DirectionalLight(0xc6d9fa,1.9); fill.position.set(4,3,3);scene.add(fill);
+      const rim = new THREE.DirectionalLight(0xffefd4,2.4); rim.position.set(1,5,-4);scene.add(rim);
+      const studio = new THREE.Scene(); studio.background = new THREE.Color(0x393e40);
+      for (const [position,scale,intensity] of [[[-4,5,3],[5,7,1],3],[[5,3,0],[3,6,1],2],[[0,5,-4],[5,3,1],4]]) {
+        const panel = new THREE.Mesh(new THREE.PlaneGeometry(...scale.slice(0,2)),new THREE.MeshBasicMaterial({color:new THREE.Color().setScalar(intensity),side:THREE.DoubleSide}));
+        panel.position.set(...position);panel.lookAt(0,2,0);studio.add(panel);
+      }
+      const pmrem = new THREE.PMREMGenerator(renderer);
+      scene.environment = pmrem.fromScene(studio,.025).texture; scene.environmentIntensity=.38; pmrem.dispose();
+
+      const mat = (color,roughness,metalness=0) => new THREE.MeshStandardMaterial({color,roughness,metalness});
+      const bone = mat('#eeeee5',.52), boneShade = mat('#d9d8c9',.5);
+      const voidMat = mat('#030403',1), fabric = mat('#171b1b',.91), armor = mat('#202628',.4,.6);
+      const edge = mat('#353d3d',.34,.65), lacquer = new THREE.MeshPhysicalMaterial({color:'#101413',roughness:.36,metalness:.3,clearcoat:.55,clearcoatRoughness:.3});
+      const bronze = mat('#887452',.4,.7), ochre = mat('#9b6d38',.6,.2), pantsMat = mat('#433b2e',.94), seamMat = mat('#5a5140',.91);
+      const soleMat = mat('#101412',.47), sockMat = mat('#deded3',.91), crackMat = mat('#b2b3a5',.9);
+      // Fine procedural variation in lacquer and fabric, sampled in object space.
+      for (const material of [lacquer,armor,fabric,pantsMat]) {
+        material.onBeforeCompile = shader => {
+          shader.vertexShader = 'varying vec3 vCraftPosition;\n'+shader.vertexShader;
+          shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvCraftPosition = position;');
+          shader.fragmentShader = 'varying vec3 vCraftPosition;\nfloat craftNoise(vec3 p){return fract(sin(dot(p,vec3(127.1,311.7,74.7)))*43758.5453);}\n'+shader.fragmentShader;
+          shader.fragmentShader = shader.fragmentShader.replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor = clamp(roughnessFactor + (craftNoise(floor(vCraftPosition*450.0))-.5)*.12,.08,1.0);');
+        };
+      }
+
+      // Reusable, bevelled geometry keeps the many armor components inexpensive.
+      const geometryCache = new Map();
+      const sphere = new THREE.SphereGeometry(1,40,28);
+      const sphereMedium = new THREE.SphereGeometry(1,24,16);
+      const sphereSmall = new THREE.SphereGeometry(1,12,8);
+      function mesh(geometry,material,parent,x=0,y=0,z=0){const m=new THREE.Mesh(geometry,material);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;parent.add(m);return m;}
+      function ellipsoid(parent,material,x,y,z,sx,sy,sz){const g=Math.max(sx,sy,sz)<.09?sphereSmall:Math.max(sx,sy,sz)<.5?sphereMedium:sphere;const m=mesh(g,material,parent,x,y,z);m.scale.set(sx,sy,sz);return m;}
+      function roundedGeometry(w,h,d,r=.03){
+        r=Math.min(r,w*.45,h*.45,d*.45);const k=[w,h,d,r].join(':');if(geometryCache.has(k))return geometryCache.get(k);
+        const s=new THREE.Shape(),x=-w/2+r,y=-h/2+r,ww=w-2*r,hh=h-2*r;
+        s.moveTo(x+r,y);s.lineTo(x+ww-r,y);s.quadraticCurveTo(x+ww,y,x+ww,y+r);s.lineTo(x+ww,y+hh-r);s.quadraticCurveTo(x+ww,y+hh,x+ww-r,y+hh);s.lineTo(x+r,y+hh);s.quadraticCurveTo(x,y+hh,x,y+hh-r);s.lineTo(x,y+r);s.quadraticCurveTo(x,y,x+r,y);
+        const g=new THREE.ExtrudeGeometry(s,{depth:d-2*r,bevelEnabled:true,bevelThickness:r,bevelSize:r,bevelSegments:3,curveSegments:4,steps:1});g.translate(0,0,-d/2+r);geometryCache.set(k,g);return g;
+      }
+      function box(parent,material,x,y,z,w,h,d,r=.025){return mesh(roundedGeometry(w,h,d,r),material,parent,x,y,z);}
+      function tube(parent,material,points,radius=.015,segments=24){const curve=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(...p)));return mesh(new THREE.TubeGeometry(curve,segments,radius,7,false),material,parent);}
+      function bar(parent,material,a,b,w,d=w){const start=new THREE.Vector3(...a),end=new THREE.Vector3(...b);const m=box(parent,material,0,0,0,w,start.distanceTo(end),d,Math.min(w*.15,.02));m.position.copy(start.add(end).multiplyScalar(.5));m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),new THREE.Vector3(...b).sub(new THREE.Vector3(...a)).normalize());return m;}
+      function rivet(parent,x,y,z,r=.018){return ellipsoid(parent,bronze,x,y,z,r,r,r*.5);}
+      function stitch(parent,a,b,count=9){for(let i=0;i<count;i++){const t=(i+.5)/count;box(parent,seamMat,a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t,.018,.005,.007,.001);}}
+      const character=new THREE.Group();scene.add(character);
+      const body=new THREE.Group();body.position.y=1.45;character.add(body);
+      const head=new THREE.Group();head.position.set(0,3.08,.035);character.add(head);
+
+      // Rounded cranium plus a bevelled face with actual holes, dark recessed interiors.
+      ellipsoid(head,bone,0,.13,-.09,.635,.60,.46);
+      const face=new THREE.Shape();
+      face.moveTo(-.62,.36);face.bezierCurveTo(-.57,.61,.53,.63,.62,.36);
+      face.bezierCurveTo(.71,.13,.63,-.23,.47,-.30);
+      face.quadraticCurveTo(.44,-.38,.34,-.38);face.lineTo(.32,-.47);
+      face.quadraticCurveTo(.26,-.55,.20,-.46);face.lineTo(.16,-.49);
+      face.quadraticCurveTo(.10,-.58,.045,-.48);face.lineTo(-.045,-.48);
+      face.quadraticCurveTo(-.10,-.58,-.16,-.49);face.lineTo(-.20,-.46);
+      face.quadraticCurveTo(-.26,-.55,-.32,-.47);face.lineTo(-.34,-.38);
+      face.quadraticCurveTo(-.44,-.38,-.47,-.30);face.bezierCurveTo(-.63,-.23,-.71,.13,-.62,.36);
+      function eyePath(sign){const p=new THREE.Path();p.moveTo(sign*.12,.12);p.quadraticCurveTo(sign*.31,.15,sign*.50,.24);p.quadraticCurveTo(sign*.57,.14,sign*.49,-.06);p.quadraticCurveTo(sign*.40,-.22,sign*.25,-.12);p.quadraticCurveTo(sign*.14,-.05,sign*.12,.12);return p;}
+      face.holes.push(eyePath(1),eyePath(-1));
+      const nose=new THREE.Path();nose.moveTo(0,-.055);nose.lineTo(.10,-.245);nose.quadraticCurveTo(0,-.29,-.10,-.245);nose.closePath();face.holes.push(nose);
+      const rawFace=new THREE.ExtrudeGeometry(face,{depth:.15,bevelEnabled:true,bevelThickness:.048,bevelSize:.038,bevelSegments:5,curveSegments:18,steps:1});
+      // Subdivide before curving: long triangulated face polygons otherwise become
+      // visible facets. Weld shared points so the bone surface shades continuously.
+      const fp=rawFace.attributes.position,faceVertices=[],faceIndices=[],vertexLookup=new Map();
+      function faceVertex(p){
+        const v=[p.x,p.y,p.z-.27*p.x*p.x-.055*p.y*p.y];
+        const key=v.map(n=>Math.round(n*100000)).join(',');
+        if(!vertexLookup.has(key)){vertexLookup.set(key,faceVertices.length/3);faceVertices.push(...v);}
+        return vertexLookup.get(key);
+      }
+      function subdivideFace(a,b,c,depth=0){
+        const lengths=[a.distanceToSquared(b),b.distanceToSquared(c),c.distanceToSquared(a)];
+        const longest=Math.max(...lengths);
+        if(longest<.0064||depth>=12){faceIndices.push(faceVertex(a),faceVertex(b),faceVertex(c));return;}
+        const k=lengths.indexOf(longest);
+        if(k===0){const m=a.clone().add(b).multiplyScalar(.5);subdivideFace(a,m,c,depth+1);subdivideFace(m,b,c,depth+1);}
+        else if(k===1){const m=b.clone().add(c).multiplyScalar(.5);subdivideFace(a,b,m,depth+1);subdivideFace(a,m,c,depth+1);}
+        else{const m=c.clone().add(a).multiplyScalar(.5);subdivideFace(a,b,m,depth+1);subdivideFace(m,b,c,depth+1);}
+      }
+      for(let i=0;i<fp.count;i+=3)subdivideFace(new THREE.Vector3().fromBufferAttribute(fp,i),new THREE.Vector3().fromBufferAttribute(fp,i+1),new THREE.Vector3().fromBufferAttribute(fp,i+2));
+      const faceGeo=new THREE.BufferGeometry();faceGeo.setAttribute('position',new THREE.Float32BufferAttribute(faceVertices,3));faceGeo.setIndex(faceIndices);faceGeo.computeVertexNormals();rawFace.dispose();mesh(faceGeo,bone,head,0,0,.37);
+      for(const sign of [-1,1])ellipsoid(head,voidMat,sign*.33,.04,.367,.255,.23,.045);
+      ellipsoid(head,voidMat,0,-.19,.365,.115,.13,.025);
+      // A compact mandible is visible below the scalloped upper teeth.
+      ellipsoid(head,boneShade,0,-.435,.23,.37,.12,.21);
+      for(let i=0;i<5;i++)box(head,bone,-.23+i*.115,-.49,.374,.088,.093,.11,.025);
+      tube(head,crackMat,[[-.51,.37,.448],[-.45,.31,.465],[-.47,.26,.465]],.0035,8);
+      tube(head,crackMat,[[.45,-.25,.444],[.48,-.22,.445],[.50,-.24,.439]],.003,6);
+
+      // Wide, slightly irregular woven kasa. The silhouette follows the reference.
+      const hat=new THREE.Group();hat.position.y=.39;head.add(hat);
+      const hatSegments=192,hatRings=24,hatPositions=[],hatIndices=[];
+      for(let j=0;j<=hatRings;j++){
+        const t=j/hatRings,r=.008+1.245*t;
+        for(let i=0;i<=hatSegments;i++){
+          const a=i/hatSegments*Math.PI*2;
+          const wave=Math.sin(a*48)*.0028*t+Math.sin(t*210+a*3)*.0014;
+          hatPositions.push(Math.cos(a)*r,.62*(1-t)+.035*Math.sin(t*Math.PI)+wave,Math.sin(a)*r);
+        }
+      }
+      for(let j=0;j<hatRings;j++)for(let i=0;i<hatSegments;i++){const a=j*(hatSegments+1)+i,b=a+hatSegments+1;hatIndices.push(a,b,a+1,b,b+1,a+1);}
+      const hatGeo=new THREE.BufferGeometry();hatGeo.setAttribute('position',new THREE.Float32BufferAttribute(hatPositions,3));hatGeo.setIndex(hatIndices);hatGeo.computeVertexNormals();
+      const hatMaterial=lacquer.clone();hatMaterial.side=THREE.DoubleSide;hatMaterial.color.set('#090c0b');hatMaterial.roughness=.4;hatMaterial.metalness=.2;hatMaterial.clearcoat=.3;hatMaterial.envMapIntensity=.45;mesh(hatGeo,hatMaterial,hat);
+      const under=new THREE.ConeGeometry(1.25,.58,96,1,true);mesh(under,soleMat,hat,0,.279,0);
+      const brim=mesh(new THREE.TorusGeometry(1.245,.015,6,144),lacquer,hat);brim.rotation.x=Math.PI/2;
+      // Geometry ribs and concentric bindings read like black lacquered straw.
+      for(let i=0;i<64;i++){
+        const a=i/64*Math.PI*2,pts=[];
+        for(let j=0;j<8;j++){const t=.13+j*.87/7;pts.push([Math.cos(a)*1.25*t,.62*(1-t)+.035*Math.sin(t*Math.PI)+.006,Math.sin(a)*1.25*t]);}
+        tube(hat,lacquer,pts,i%4===0?.0025:.0015,12);
+      }
+      for(let j=0;j<15;j++){const t=.23+j*.052,r=1.25*t;const ring=mesh(new THREE.TorusGeometry(r,.0028,5,120),lacquer,hat,0,.62*(1-t)+.035*Math.sin(t*Math.PI)+.006,0);ring.rotation.x=Math.PI/2;}
+      mesh(new THREE.ConeGeometry(.026,.045,16),edge,hat,0,.633,0);
+      // Tapered curved horns use parallel-transport curve frames, not straight cones.
+      function horn(sign){
+        const curve=new THREE.CatmullRomCurve3([new THREE.Vector3(sign*.34,.38,.21),new THREE.Vector3(sign*.40,.54,.205),new THREE.Vector3(sign*.43,.75,.19),new THREE.Vector3(sign*.425,.90,.17)]);
+        const n=40,sides=12,frames=curve.computeFrenetFrames(n,false),positions=[],indices=[];
+        for(let i=0;i<=n;i++){const t=i/n,p=curve.getPointAt(t),radius=.066*Math.pow(1-t,.8)+.001;
+          for(let j=0;j<=sides;j++){const a=j/sides*Math.PI*2;const v=p.clone().addScaledVector(frames.normals[i],Math.cos(a)*radius).addScaledVector(frames.binormals[i],Math.sin(a)*radius);positions.push(v.x,v.y,v.z);}
+        }
+        for(let i=0;i<n;i++)for(let j=0;j<sides;j++){const a=i*(sides+1)+j,b=a+sides+1;indices.push(a,b,a+1,b,b+1,a+1);}
+        const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));g.setIndex(indices);g.computeVertexNormals();mesh(g,lacquer,hat);
+        for(let i=0;i<6;i++){const t=.045+i*.043,p=curve.getPointAt(t),ring=mesh(new THREE.TorusGeometry(.067*Math.pow(1-t,.8),.004,5,16),edge,hat);ring.position.copy(p);ring.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1),curve.getTangentAt(t));}
+      }
+      horn(-1);horn(1);
+
+      // Padded core, layered chest plates, raised collar, shoulder harness.
+      ellipsoid(body,fabric,0,.60,0,.56,.75,.34);
+      box(body,armor,0,.52,.20,.98,1.05,.34,.105);
+      box(body,fabric,0,1.11,-.08,.68,.36,.49,.07);
+      for(const sign of [-1,1]){
+        const collar=box(body,lacquer,sign*.275,1.22,.24,.27,.40,.12,.035);collar.rotation.z=sign*-.43;collar.rotation.y=sign*.23;
+        bar(body,fabric,[sign*.45,1.08,.37],[sign*.23,.50,.45],.15,.07);
+        bar(body,edge,[sign*.455,1.06,.417],[sign*.235,.50,.497],.018,.015);
+        const strap=box(body,armor,sign*.375,.97,.435,.20,.11,.06,.012);strap.rotation.z=sign*.48;
+        box(body,bronze,sign*.37,.97,.475,.087,.042,.014,.007);
+        const plate=box(body,armor,sign*.265,.56,.415,.35,.29,.10,.028);plate.rotation.z=sign*-.15;
+        bar(body,ochre,[sign*.35,.64,.482],[sign*.27,.47,.482],.034,.02);
+      }
+      for(let i=0;i<3;i++){const w=.39-i*.07;box(body,edge,0,.94-i*.22,.422,w,.17,.10,.025);box(body,lacquer,0,.95-i*.22,.483,w-.055,.115,.018,.008);}
+      // Waist webbing, bronze buckle, front utility pouches, and armor skirt.
+      box(body,fabric,0,.22,.30,1.04,.28,.28,.025);
+      for(const y of [.18,.29])box(body,ochre,0,y,.459,.82,.028,.024,.006);
+      box(body,bronze,0,.235,.49,.21,.16,.038,.017);box(body,soleMat,0,.235,.519,.15,.10,.028,.009);
+      box(body,edge,0,.235,.54,.025,.115,.016,.005);
+      function pouch(parent,x,y,z,w,h){
+        box(parent,fabric,x,y,z,w,h,.16,.035);
+        box(parent,armor,x,y+h*.28,z+.08,w+.018,h*.27,.075,.016);
+        bar(parent,edge,[x-w*.36,y-h*.38,z+.085],[x-w*.36,y+h*.13,z+.085],.015,.012);
+        bar(parent,edge,[x+w*.36,y-h*.38,z+.085],[x+w*.36,y+h*.13,z+.085],.015,.012);
+        box(parent,lacquer,x,y-.015,z+.098,.055,h*.72,.035,.008);
+        rivet(parent,x,y+.07,z+.128,.014);
+        stitch(parent,[x-w*.32,y-h*.36,z+.095],[x+w*.32,y-h*.36,z+.095],7);
+      }
+      pouch(body,-.29,-.045,.395,.28,.41);pouch(body,.29,-.045,.395,.28,.41);
+      pouch(body,-.52,.10,.12,.18,.38);pouch(body,.52,.10,.12,.18,.38);
+      // Hanging kusazuri plates wrap around the waist, with lacing and hems.
+      for(let i=0;i<9;i++){
+        const a=(i/9)*Math.PI*2,skirt=new THREE.Group();skirt.position.set(Math.sin(a)*.49,-.12,Math.cos(a)*.27);skirt.rotation.y=a;skirt.rotation.x=-.14;body.add(skirt);
+        box(skirt,armor,0,-.10,0,.275,.54,.085,.025);
+        box(skirt,lacquer,0,-.15,.047,.20,.39,.028,.015);
+        for(const x of [-.099,.099])bar(skirt,edge,[x,.12,.05],[x,-.33,.05],.014,.016);
+        for(let k=0;k<3;k++){box(skirt,bronze,-.055+k*.055,.108,.059,.022,.034,.012,.004);}
+      }
+      // Backpack and a tied rear sash remain detailed when the sculpture is turned.
+      box(body,fabric,0,.60,-.36,.75,.81,.27,.065);
+      for(const sign of [-1,1]){bar(body,edge,[sign*.25,.96,-.516],[sign*.25,.21,-.516],.07,.028);pouch(body,sign*.19,.43,-.56,.27,.36);}
+      box(body,bronze,0,.83,-.518,.12,.06,.02,.008);
+
+      // Short articulated arms: under-sleeve, overlapping sode, elbow and gauntlet.
+      const arms=[];
+      for(const sign of [-1,1]){
+        const arm=new THREE.Group();arm.position.set(sign*.58,2.52,0);arm.rotation.z=sign*-.035;arm.scale.y=.91;character.add(arm);arms.push(arm);
+        ellipsoid(arm,fabric,sign*.08,-.40,0,.24,.56,.25);
+        ellipsoid(arm,armor,sign*.105,-.69,.035,.245,.25,.255);
+        for(let i=0;i<4;i++){
+          const plate=box(arm,armor,sign*(.13+i*.026),-.045-i*.135,.06,.38,.18,.43,.035);plate.rotation.z=sign*.20;
+          box(arm,edge,sign*(.14+i*.026),-.085-i*.135,.283,.30,.025,.022,.008);
+          for(const x of [-.10,.10])rivet(arm,sign*(.13+i*.026)+x,-.03-i*.135,.285,.015);
+          for(const x of [-.065,.065])box(arm,fabric,sign*(.13+i*.026)+x,-.085-i*.135,.30,.038,.075,.025,.009);
+        }
+        const forearm=new THREE.Group();forearm.position.set(sign*.07,-.83,.07);forearm.rotation.z=sign*-.18;arm.add(forearm);
+        box(forearm,armor,0,0,.13,.37,.40,.21,.065);
+        box(forearm,lacquer,0,.01,.25,.23,.31,.053,.027);
+        for(const x of [-.125,.125])bar(forearm,edge,[x,.14,.248],[x,-.11,.248],.016,.018);
+        for(const y of [-.13,.10])box(forearm,fabric,0,y,.04,.40,.07,.39,.018);
+        ellipsoid(forearm,soleMat,0,-.28,.13,.20,.22,.20);
+        box(forearm,armor,0,-.26,.294,.29,.16,.07,.025);
+        for(let j=0;j<4;j++){
+          ellipsoid(forearm,lacquer,-.12+j*.079,-.37,.215,.045,.10,.063);
+          box(forearm,edge,-.12+j*.079,-.31,.275,.048,.048,.03,.009);
+        }
+        ellipsoid(forearm,soleMat,-sign*.16,-.265,.265,.077,.11,.074).rotation.z=sign*-.55;
+      }
+
+      // Gathered short trousers, tabi ankles, separated bone toes and sandal straps.
+      for(const sign of [-1,1]){
+        const leg=new THREE.Group();leg.position.set(sign*.34,.60,0);leg.rotation.z=sign*-.045;character.add(leg);
+        ellipsoid(leg,pantsMat,0,.23,-.015,.275,.36,.255);
+        mesh(new THREE.CylinderGeometry(.23,.19,.36,20),pantsMat,leg,0,.10,0);
+        for(let i=0;i<6;i++){
+          const a=i/6*Math.PI*2;const fold=ellipsoid(leg,i%2?pantsMat:seamMat,Math.sin(a)*.20,.15+Math.sin(i*3)*.03,Math.cos(a)*.20,.028,.23,.026);fold.rotation.z=Math.sin(i)*.18;
+        }
+        const cuff=mesh(new THREE.TorusGeometry(.195,.026,8,32),pantsMat,leg,0,-.075,0);cuff.rotation.x=Math.PI/2;
+        ellipsoid(leg,sockMat,0,-.20,.01,.15,.20,.16);
+        for(const y of [-.12,-.145,-.17]){const rib=mesh(new THREE.TorusGeometry(.148,.003,4,28),boneShade,leg,0,y,.01);rib.rotation.x=Math.PI/2;}
+        const foot=new THREE.Group();foot.position.set(0,-.43,.17);foot.rotation.y=sign*-.12;leg.add(foot);
+        ellipsoid(foot,soleMat,0,0,.07,.272,.105,.40);
+        ellipsoid(foot,edge,0,-.025,.065,.267,.06,.389);
+        ellipsoid(foot,bone,0,.08,.155,.208,.092,.25);
+        // Big toe sits separately beside the smaller toes, under a Y strap.
+        ellipsoid(foot,bone,-sign*.125,.078,.36,.075,.07,.071);
+        for(let i=0;i<4;i++)ellipsoid(foot,bone,-sign*.025+sign*i*.055,.076,.371-i*.014,.033,.055,.051);
+        ellipsoid(foot,sockMat,0,.115,-.105,.15,.145,.17);
+        tube(foot,lacquer,[[-.235,.075,-.035],[-.16,.185,.13],[-sign*.072,.153,.30]],.046,20);
+        tube(foot,lacquer,[[.235,.075,-.035],[.16,.185,.13],[-sign*.072,.153,.30]],.046,20);
+        bar(foot,soleMat,[-sign*.072,.145,.30],[-sign*.072,.047,.322],.034,.034);
+      }
+
+      // Diagonal katana: lacquered saya, metal fittings and crossed handle wrapping.
+      const sword=new THREE.Group();sword.position.set(-.72,1.45,-.42);sword.rotation.z=-.67;character.add(sword);
+      box(sword,lacquer,0,.78,0,.125,2.34,.15,.04);
+      box(sword,edge,0,-.35,0,.14,.10,.165,.025);
+      for(const y of [.27,.42,1.70])box(sword,bronze,0,y,0,.135,.037,.162,.01);
+      box(sword,edge,0,1.87,0,.36,.045,.26,.02);
+      mesh(new THREE.CylinderGeometry(.068,.068,.53,16),fabric,sword,0,2.16,0);
+      for(let i=0;i<7;i++){
+        const y=1.94+i*.066;
+        bar(sword,seamMat,[-.055,y,.063],[.055,y+.072,.063],.025,.015);
+        bar(sword,seamMat,[.055,y,.066],[-.055,y+.072,.066],.025,.015);
+        bar(sword,seamMat,[-.055,y,-.063],[.055,y+.072,-.063],.025,.015);
+        bar(sword,seamMat,[.055,y,-.066],[-.055,y+.072,-.066],.025,.015);
+      }
+      box(sword,bronze,0,2.45,0,.15,.065,.16,.018);
+      tube(body,fabric,[[-.36,.68,-.47],[-.51,.43,-.50],[-.43,.12,-.48]],.035,18);
+
+      // Low gallery plinth and a soft cast shadow ground the figure.
+      const plinthMat=mat('#d8d8ca',.84);
+      const plinth=mesh(new THREE.CylinderGeometry(1.47,1.49,.095,128),plinthMat,scene,0,-.064,0);
+      const plinthRim=mesh(new THREE.TorusGeometry(1.475,.009,6,128),mat('#c2c4b4',.65),scene,0,-.012,0);plinthRim.rotation.x=Math.PI/2;
+      const floor=mesh(new THREE.PlaneGeometry(200,200),new THREE.ShadowMaterial({color:0x474d36,opacity:.085}),scene,0,-.114,0);floor.rotation.x=-Math.PI/2;floor.castShadow=false;
+
+      // Accessible, fully functioning controls. Reset returns all toggles to defaults.
+      const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
+      let idle=!reducedMotion.matches,wire=false;
+      const rotateButton=document.querySelector('#rotate'),motionButton=document.querySelector('#motion'),wireButton=document.querySelector('#wireframe');
+      motionButton.setAttribute('aria-pressed',String(idle));
+      const materials=new Set();character.traverse(o=>{if(o.isMesh)materials.add(o.material);});
+      function setWire(value){wire=value;for(const m of materials)m.wireframe=value;wireButton.setAttribute('aria-pressed',String(value));}
+      function reset(){
+        const mobile=viewport.clientWidth<600;
+        camera.position.set(mobile?1.5:2.5,mobile?3.25:3.55,mobile?10.8:10.0);
+        controls.target.set(0,2.15,0);controls.autoRotate=false;rotateButton.setAttribute('aria-pressed','false');
+        idle=!reducedMotion.matches;motionButton.setAttribute('aria-pressed',String(idle));setWire(false);controls.update();
+      }
+      rotateButton.addEventListener('click',()=>{controls.autoRotate=!controls.autoRotate;rotateButton.setAttribute('aria-pressed',String(controls.autoRotate));});
+      motionButton.addEventListener('click',()=>{idle=!idle;motionButton.setAttribute('aria-pressed',String(idle));});
+      wireButton.addEventListener('click',()=>setWire(!wire));
+      document.querySelector('#reset').addEventListener('click',reset);
+      let initial=true;
+      function resize(){const w=viewport.clientWidth,h=viewport.clientHeight;renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();if(initial){reset();initial=false;}}
+      new ResizeObserver(resize).observe(viewport);resize();
+      controls.addEventListener('change',()=>{
+        const a=controls.getAzimuthalAngle(),front=Math.cos(a)>.75;
+        document.querySelector('#view-label').textContent=front?(Math.abs(a)<.13?'FRONT VIEW':'THREE-QUARTER VIEW'):(Math.cos(a)<-.75?'BACK VIEW':'PROFILE VIEW');
+      });
+      const clock=new THREE.Clock();let breathTime=0;
+      renderer.setAnimationLoop(()=>{
+        const dt=Math.min(clock.getDelta(),.05);if(idle)breathTime+=dt;
+        const breath=Math.sin(breathTime*1.65);
+        body.scale.y=1+breath*.007;head.position.y=3.08+breath*.009;head.rotation.z=Math.sin(breathTime*.65)*.008;
+        arms.forEach((a,i)=>a.rotation.z=(i===0?-1:1)*(-.035+Math.sin(breathTime*1.65+.6)*.008));
+        controls.update();renderer.render(scene,camera);
+      });
+      // Small diagnostics hook for inspecting a procedural build in a real browser.
+      window.kage={scene,camera,controls,renderer,character,get idle(){return idle;},get wireframe(){return wire;}};
+      loading.classList.add('hidden');
+      window.addEventListener('pagehide',()=>renderer.setAnimationLoop(null));
+    }catch(error){
+      loading.classList.add('error');loading.textContent='The sculpture could not load. Check your internet connection and WebGL support, then refresh.';
+      document.querySelectorAll('.tool').forEach(button=>button.disabled=true);
+      console.error('Unable to initialize Kage:',error);
+    }
+  </script>
+</body>
+</html>

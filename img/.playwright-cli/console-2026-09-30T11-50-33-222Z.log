@@ -1,0 +1,3 @@
+[     138ms] [ERROR] Failed to load resource: the server responded with a status of 404 (File not found) @ http://127.0.0.1:8767/favicon.ico:0
+[     748ms] [WARNING] sigmaRadians, 0.08, is too large and will clip, as it requested 39 samples when the maximum is set to 20 @ https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js:16956
+[     754ms] [WARNING] sigmaRadians, 0.08, is too large and will clip, as it requested 39 samples when the maximum is set to 20 @ https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js:16956

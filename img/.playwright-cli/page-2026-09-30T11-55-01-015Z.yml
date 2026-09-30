@@ -1,0 +1,43 @@
+- generic [active]:
+  - banner [ref=e1]:
+    - generic [ref=e2]:
+      - img [ref=e3]
+      - text: FORM & FABLE
+    - generic [ref=e6]: CHARACTER STUDIES VOL. 001 / 2026
+  - main:
+    - region "Character introduction":
+      - generic: THE WANDERING SPIRIT
+      - heading "Kage." [level=1]
+      - generic: THE SILENT RONIN
+      - paragraph:
+        - text: A little warrior. An old soul.
+        - text: Bone beneath black lacquer,
+        - text: carrying stories without a sound.
+      - generic:
+        - text: 鬼武者 / SKELETON SAMURAI
+        - text: OBSIDIAN · BONE · BRONZE
+    - generic: 影
+    - generic:
+      - strong: LIVE SCULPTURE
+      - text: THREE-QUARTER VIEW
+    - generic "Interactive 3D skeleton samurai; drag to rotate and scroll to zoom" [ref=e7]:
+      - status: CRAFTING THE WARRIOR…
+      - generic "Kage, a three-dimensional skeleton samurai" [ref=e8]
+    - group "Model controls" [ref=e9]:
+      - button "Rotate" [ref=e10] [cursor=pointer]:
+        - img [ref=e11]
+        - text: Rotate
+      - button "Idle" [pressed] [ref=e13] [cursor=pointer]:
+        - img [ref=e14]
+        - text: Idle
+      - button "Mesh" [ref=e17] [cursor=pointer]:
+        - img [ref=e18]
+        - text: Mesh
+      - button "Reset" [ref=e20] [cursor=pointer]:
+        - img [ref=e21]
+        - text: Reset
+    - generic [ref=e23]: DRAG to orbit·SCROLL to zoom· RIGHT-DRAG to pan
+    - generic: A STUDY IN STILLNESS
+  - contentinfo [ref=e24]:
+    - generic [ref=e25]: 01 / THE RONIN COLLECTION
+    - generic [ref=e26]: Sculpted in code. Made to explore.

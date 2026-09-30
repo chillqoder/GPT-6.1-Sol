@@ -1,0 +1,92 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - link "Scoop Studio home" [ref=e3] [cursor=pointer]:
+      - /url: ./
+      - img [ref=e4]
+      - text: scoop studio
+      - generic [ref=e9]: ®
+    - navigation "Main navigation" [ref=e10]:
+      - link "The flavors" [ref=e11] [cursor=pointer]:
+        - /url: "#flavors"
+      - button "Our little studio ↗" [ref=e12] [cursor=pointer]
+      - generic [ref=e13]: A LITTLE SCOOP OF HAPPY
+  - main [ref=e15]:
+    - region "Made to melt." [ref=e16]:
+      - generic:
+        - generic: SOMETHING SWEET. SOMETHING SLOW.
+        - heading "Made to melt." [level=1]:
+          - text: Made to
+          - emphasis: melt.
+        - paragraph:
+          - text: A swirl of joy, a drizzle of chocolate,
+          - text: and absolutely no reason to rush.
+          - text: Make a little moment of your own.
+        - generic:
+          - generic: Pick your happy
+          - group "Ice cream flavor":
+            - button "Strawberry cloud" [pressed] [ref=e17] [cursor=pointer]: ✓
+            - button "Pistachio daydream" [ref=e19] [cursor=pointer]
+            - button "Vanilla afternoon" [ref=e21] [cursor=pointer]
+          - paragraph:
+            - generic: Strawberry cloud
+            - generic: with chocolate drizzle
+        - button "Make it melt" [ref=e23] [cursor=pointer]:
+          - generic [ref=e24]: Make it melt
+          - img [ref=e25]
+        - paragraph: Go on. It's a little deliciously hypnotic.
+      - img "Interactive 3D strawberry ice cream in a waffle cone with glossy flowing chocolate, a cherry, and rainbow sprinkles. Drag to rotate." [ref=e27]
+      - generic [ref=e29]:
+        - generic [ref=e30]: 01 / 03
+        - generic [ref=e31]: THE EVERYDAY COLLECTION
+      - generic [ref=e32]:
+        - text: a cherry
+        - text: on top, always.
+        - img [ref=e34]
+      - generic [ref=e36]:
+        - img [ref=e37]
+        - text: DRAG TO TAKE IT FOR A SPIN
+      - generic "Dessert controls" [ref=e39]:
+        - generic [ref=e40]:
+          - generic [ref=e41]:
+            - img [ref=e42]
+            - text: Sprinkles
+          - switch "Sprinkles" [checked] [ref=e44] [cursor=pointer]
+        - generic [ref=e45]:
+          - generic [ref=e46]:
+            - img [ref=e47]
+            - text: Auto-rotate
+          - switch "Auto-rotate" [checked] [ref=e49] [cursor=pointer]
+        - generic [ref=e50]:
+          - generic [ref=e51]:
+            - generic [ref=e52]:
+              - img [ref=e53]
+              - text: Drizzle speed
+            - status [ref=e55]: 1×
+          - slider "Drizzle speed" [ref=e56] [cursor=pointer]: "1"
+          - generic [ref=e57]:
+            - generic [ref=e58]: TAKE IT SLOW
+            - generic [ref=e59]: LET IT FLOW
+        - button "A fresh start" [ref=e60] [cursor=pointer]:
+          - img [ref=e61]
+          - text: A fresh start
+    - region "The little details" [ref=e63]:
+      - generic [ref=e64]:
+        - img [ref=e65]
+        - generic [ref=e67]:
+          - strong [ref=e68]: A little imperfect
+          - generic [ref=e69]: Lovingly shaped, scoop by scoop.
+      - generic [ref=e70]:
+        - img [ref=e71]
+        - generic [ref=e73]:
+          - strong [ref=e74]: Go with the flow
+          - generic [ref=e75]: Slow drips. Sweet little moments.
+      - generic [ref=e76]:
+        - img [ref=e77]
+        - generic [ref=e79]:
+          - strong [ref=e80]: Just for the joy of it
+          - generic [ref=e81]: No calories. All the good feelings.
+      - generic [ref=e82]: ✳ Life's sweeter with a swirl.
+  - contentinfo [ref=e83]:
+    - generic [ref=e84]: © 2026 SCOOP STUDIO
+    - generic [ref=e85]: MADE FOR YOUR LITTLE BREAK
+  - status

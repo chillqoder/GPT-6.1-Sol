@@ -1,0 +1,30 @@
+- generic [active]:
+  - banner [ref=e1]:
+    - generic [ref=e2]:
+      - img [ref=e3]
+      - text: FORM & FABLE
+    - generic [ref=e6]: VOL. 001 / 2026
+  - main:
+    - region "Character introduction":
+      - generic: THE WANDERING SPIRIT
+      - heading "Kage." [level=1]
+      - generic: THE SILENT RONIN
+    - generic "Interactive 3D skeleton samurai; drag to rotate and scroll to zoom" [ref=e7]:
+      - status: CRAFTING THE WARRIOR…
+    - group "Model controls" [ref=e8]:
+      - button "Rotate" [ref=e9] [cursor=pointer]:
+        - img [ref=e10]
+        - text: Rotate
+      - button "Idle" [pressed] [ref=e12] [cursor=pointer]:
+        - img [ref=e13]
+        - text: Idle
+      - button "Mesh" [ref=e16] [cursor=pointer]:
+        - img [ref=e17]
+        - text: Mesh
+      - button "Reset" [ref=e19] [cursor=pointer]:
+        - img [ref=e20]
+        - text: Reset
+    - generic [ref=e22]: DRAG to orbit·SCROLL to zoom
+  - contentinfo [ref=e23]:
+    - generic [ref=e24]: 01 / THE RONIN COLLECTION
+    - generic [ref=e25]: Sculpted in code. Made to explore.

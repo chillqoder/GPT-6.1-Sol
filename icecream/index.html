@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#e9eddf">
+  <meta name="description" content="A little scoop of happy. Create your own animated, low-poly ice cream with flowing chocolate, sprinkles, and a cherry on top.">
+  <title>Scoop Studio — A little scoop of happy</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%23e9eddf'/%3E%3Cpath d='m12 20 8 16 8-16' fill='%23d3b588' stroke='%23293e30' stroke-width='1.5'/%3E%3Cpath d='M9 18a5 5 0 0 1 4-5 7 7 0 0 1 14 0 5 5 0 0 1 4 5v3H9Z' fill='%23e6a4b5' stroke='%23293e30' stroke-width='1.5'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;450;500;550;600;650;700&family=Fraunces:ital,wght@0,500;0,550;0,600;1,500;1,550&display=swap" rel="stylesheet">
+  <style>
+    :root { --ink:#293e30; --muted:#717b69; --paper:#f7f7ed; --line:#cdd3be; --pink:#eb9caf; --green:#b5c99b; --cream:#f1dfaf; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); font-family:'DM Sans',sans-serif; background:#e9eddf; -webkit-font-smoothing:antialiased; }
+    button,a,input { -webkit-tap-highlight-color:transparent; }
+    button { font:inherit; cursor:pointer; color:inherit; }
+    button:focus-visible,a:focus-visible,input:focus-visible { outline:3px solid #cc6885; outline-offset:5px; }
+    button { border:0; }
+    a { color:inherit; text-decoration:none; }
+    svg { display:block; flex-shrink:0; }
+    .site-header { display:flex; justify-content:space-between; align-items:center; height:100px; max-width:1600px; margin:auto; padding:0 5%; border-bottom:1px solid var(--line); }
+    .brand { display:flex; align-items:center; gap:11px; font-weight:650; font-size:23px; letter-spacing:-1px; }
+    .brand-mark { width:31px; height:38px; }
+    .header-right { display:flex; align-items:center; gap:39px; font-size:13px; font-weight:500; }
+    .about-link { background:none; padding:10px 0; }
+    .header-tag { border:1px solid #bfc9b4; border-radius:30px; padding:10px 16px; display:flex; align-items:center; gap:8px; font-size:11px; }
+    .status-dot { display:inline-block; height:6px; width:6px; border-radius:50%; background:#718762; }
+    main { max-width:1600px; margin:auto; }
+    .hero { position:relative; min-height:675px; height:calc(100svh - 233px); max-height:850px; overflow:clip; }
+    .hero:before { content:''; position:absolute; width:720px; height:720px; right:2%; top:-8%; background:radial-gradient(ellipse,#d2ddbd 0%,#dce4cc 40%,transparent 69%); pointer-events:none; }
+    .intro { position:relative; z-index:2; width:43%; padding:64px 0 40px 8%; }
+    .intro button,.intro a { pointer-events:auto; }
+    .eyebrow { font-size:10px; font-weight:600; letter-spacing:2px; display:flex; align-items:center; gap:11px; }
+    .eyebrow:before { content:''; display:block; width:23px; height:1px; background:#81916f; }
+    h1 { font-family:'Fraunces',Georgia,serif; font-weight:500; font-size:clamp(72px,7.25vw,112px); line-height:.98; letter-spacing:-6px; margin:30px 0 23px; }
+    h1 em { font-weight:500; color:#697c50; }
+    .intro-copy { font-size:14px; line-height:1.8; color:#6b7562; max-width:285px; margin:0; }
+    .flavor-picker { margin-top:35px; }
+    .field-label { display:block; font-size:9px; font-weight:600; letter-spacing:1.7px; text-transform:uppercase; margin-bottom:14px; }
+    .flavor-list { display:flex; gap:10px; }
+    .flavor { width:48px; height:48px; border:1px solid transparent; background:transparent; display:grid; place-items:center; border-radius:50%; position:relative; transition:transform .2s,border-color .2s; }
+    .flavor:hover { transform:translateY(-3px); }
+    .flavor[aria-pressed=true] { border-color:var(--ink); }
+    .flavor span { width:34px; height:34px; border-radius:50%; box-shadow:inset 0 -3px 0 #00000007; }
+    .flavor[aria-pressed=true]:after { content:'✓'; position:absolute; font-size:15px; font-weight:500; }
+    .flavor:nth-child(1) span { background:var(--pink); }
+    .flavor:nth-child(2) span { background:var(--green); }
+    .flavor:nth-child(3) span { background:var(--cream); }
+    .selected-flavor { margin:12px 0 0; font-size:12px; display:flex; align-items:center; gap:10px; }
+    .selected-flavor span { color:#87907c; font-size:10px; }
+    .melt-button { display:flex; align-items:center; justify-content:space-between; gap:32px; margin-top:29px; background:var(--ink); color:var(--paper); padding:17px 21px; font-size:12px; font-weight:500; border-radius:6px; width:207px; transition:background .2s,transform .2s; }
+    .melt-button:hover { background:#3d5642; transform:translateY(-2px); }
+    .melt-button[aria-pressed=true] { background:#8b4d45; }
+    .tiny-note { margin:12px 0 0; font-size:10px; color:#849077; }
+    .visual-stage { position:absolute; inset:0 0 0 35%; z-index:1; }
+    #scene { position:absolute; inset:0; cursor:grab; touch-action:pan-y; }
+    #scene:active { cursor:grabbing; }
+    #scene canvas { display:block; width:100%; height:100%; outline:none; }
+    .scene-placeholder { position:absolute; top:45%; width:100%; text-align:center; color:#748466; font-size:12px; line-height:1.7; }
+    .scene-placeholder.hidden { display:none; }
+    .orbit-label { position:absolute; bottom:30px; left:43%; z-index:2; display:flex; align-items:center; gap:9px; transform:translateX(-50%); font-size:9px; letter-spacing:1.2px; white-space:nowrap; color:#7e8970; pointer-events:none; }
+    .edition { position:absolute; top:54px; right:7.7%; z-index:2; text-align:right; pointer-events:none; }
+    .edition .number { font-family:'Fraunces',Georgia,serif; font-size:36px; font-weight:500; color:#7e8c6e; letter-spacing:-2px; }
+    .edition .number small { font:10px 'DM Sans',sans-serif; color:#9aa38b; letter-spacing:0; }
+    .edition .edition-label { margin-top:5px; font-size:8px; letter-spacing:1.5px; color:#7e8970; }
+    .handwritten { position:absolute; top:29%; right:8.5%; z-index:2; color:#788562; font-family:'Fraunces',Georgia,serif; font-size:19px; font-style:italic; transform:rotate(8deg); line-height:1.3; pointer-events:none; }
+    .handwritten svg { margin:10px 0 0 7px; transform:rotate(-8deg); }
+    .studio-controls { position:absolute; right:5%; bottom:54px; z-index:2; width:172px; border-top:1px solid #b9c6a7; padding-top:15px; }
+    .control-row { display:flex; justify-content:space-between; align-items:center; font-size:10px; margin:14px 0; }
+    .control-row:first-child { margin-top:0; }
+    .control-row label { display:flex; align-items:center; gap:7px; }
+    .switch { border:1px solid #bdc8ad; width:28px; height:16px; padding:2px; border-radius:20px; background:#c8d2bb; transition:background .2s; }
+    .switch:before { content:''; display:block; width:10px; height:10px; border-radius:50%; background:#f4f5ea; transition:transform .2s; }
+    .switch[aria-checked=true] { background:#627655; border-color:#627655; }
+    .switch[aria-checked=true]:before { transform:translateX(11px); }
+    .speed-labels { display:flex; justify-content:space-between; font-size:8px; color:#849077; margin-top:6px; }
+    input[type=range] { appearance:none; width:100%; height:3px; display:block; background:#bcc9ab; border-radius:4px; cursor:pointer; margin:15px 0 0; accent-color:#536b44; }
+    input[type=range]::-webkit-slider-thumb { appearance:none; width:10px; height:10px; border-radius:50%; background:#536b44; border:2px solid #e9eddf; box-shadow:0 0 0 1px #536b44; }
+    input[type=range]::-moz-range-thumb { width:8px; height:8px; background:#536b44; border:2px solid #e9eddf; border-radius:50%; }
+    .reset { width:100%; background:transparent; font-size:9px; color:#748366; display:flex; justify-content:center; align-items:center; gap:6px; margin-top:20px; padding:8px; }
+    .reset:hover { color:var(--ink); }
+    .detail-strip { display:grid; grid-template-columns:1.06fr 1fr 1fr 1.13fr; align-items:center; margin:0 5%; padding:24px 0; border-top:1px solid var(--line); min-height:92px; }
+    .detail { display:flex; align-items:center; gap:14px; padding:0 28px; border-right:1px solid var(--line); }
+    .detail:first-child { padding-left:0; }
+    .detail svg { color:#728364; width:23px; height:23px; }
+    .detail strong { display:block; font-size:11px; font-weight:550; }
+    .detail small { display:block; color:#859078; font-size:9px; margin-top:5px; }
+    .detail-last { padding-left:30px; text-align:right; font-family:'Fraunces',Georgia,serif; font-style:italic; font-size:20px; color:#748364; }
+    .detail-last span { margin-right:10px; font-family:serif; }
+    .site-footer { display:flex; align-items:center; justify-content:space-between; padding:14px 5% 20px; color:#909985; font-size:8px; letter-spacing:.4px; }
+    .footer-right { display:flex; align-items:center; gap:8px; }
+    .footer-right .status-dot { width:4px; height:4px; }
+    .toast { position:fixed; bottom:24px; left:50%; transform:translate(-50%,20px); padding:12px 21px; background:#293e30; color:#f5f6ec; border-radius:30px; z-index:10; font-size:11px; opacity:0; pointer-events:none; transition:opacity .2s,transform .2s; white-space:nowrap; }
+    .toast.show { opacity:1; transform:translate(-50%,0); }
+    dialog { padding:35px; background:var(--paper); color:var(--ink); border:1px solid #c4ceb6; border-radius:14px; max-width:420px; width:calc(100% - 40px); box-shadow:0 20px 90px #24301e25; }
+    dialog::backdrop { background:#2b3d3040; backdrop-filter:blur(5px); }
+    dialog h2 { font:500 32px 'Fraunces',Georgia,serif; margin:13px 0; letter-spacing:-1px; }
+    dialog p { color:#718068; font-size:13px; line-height:1.8; }
+    .close-dialog { position:absolute; top:16px; right:16px; border-radius:50%; background:#e5eadb; width:28px; height:28px; font-size:18px; }
+    @media(min-width:1600px) { h1 { font-size:112px; } }
+    @media(max-width:1100px) { .intro { padding-left:6%; width:45%; } h1 { font-size:84px; } .handwritten { right:3%; top:28%; font-size:17px; } .studio-controls { width:145px; right:4%; } .visual-stage { left:33%; right:3%; } .detail { padding:0 17px; } .detail-last { font-size:17px; } }
+    @media(max-width:800px) { .site-header { height:78px; padding:0 6%; } .header-right { gap:20px; } .header-tag { display:none; } .brand { font-size:21px; } .hero { min-height:0; height:auto; max-height:none; } .hero:before { top:320px; right:-120px; width:750px; height:750px; } .intro { width:100%; padding:45px 6% 0; } h1 { font-size:86px; letter-spacing:-5px; margin:23px 0 20px; } h1 br { display:none; } .intro-copy { max-width:320px; font-size:13px; } .flavor-picker { margin-top:24px; } .melt-button { margin-top:23px; } .visual-stage { position:relative; inset:auto; width:100%; height:580px; margin-top:-15px; } .edition { top:35px; right:7%; } .handwritten { top:29%; right:6%; font-size:16px; } .studio-controls { position:relative; inset:auto; margin:12px 6% 30px; width:auto; display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; padding-top:18px; } .control-row { margin:0; gap:12px; } .speed-control { grid-column:3; grid-row:1 / span 2; } .reset { grid-column:1 / span 2; margin:0; justify-content:flex-start; padding:0; } .orbit-label { left:50%; bottom:12px; } .detail-strip { grid-template-columns:1fr 1fr; gap:26px 0; padding:25px 0; margin:0 6%; } .detail { border:0; padding:0; } .detail:nth-child(2) { padding-left:14px; } .detail-last { font-size:18px; text-align:left; padding-left:14px; } .site-footer { padding:8px 6% 22px; } }
+    @media(max-width:480px) { .site-header { height:73px; } .brand { font-size:19px; gap:8px; } .brand-mark { width:25px; height:32px; } .header-right { font-size:11px; gap:18px; } .intro { padding-top:36px; } .eyebrow { font-size:8px; letter-spacing:1.6px; } h1 { font-size:71px; letter-spacing:-4px; margin:25px 0 20px; } .visual-stage { height:530px; margin-top:-7px; } .edition { top:30px; } .edition .number { font-size:28px; } .handwritten { right:5%; font-size:13px; } .handwritten svg { width:40px; } .studio-controls { gap:17px; grid-template-columns:1fr 1fr; } .speed-control { grid-column:1 / span 2; grid-row:2; margin-top:3px; } .speed-control .control-row { font-size:9px; } .speed-labels { font-size:7px; } .reset { grid-row:3; grid-column:1 / span 2; justify-content:center; margin-top:3px; } .orbit-label { font-size:8px; } .detail { gap:10px; } .detail strong { font-size:10px; } .detail small { font-size:8px; } .detail svg { width:20px; } .detail-last { font-size:16px; } }
+    @media(max-width:360px) { .header-right a { display:none; } .detail-last { font-size:14px; } }
+    @media(prefers-reduced-motion:reduce) { *,*:before,*:after { transition:none!important; scroll-behavior:auto!important; } }
+  </style>
+</head>
+<body>
+  <svg style="display:none" xmlns="http://www.w3.org/2000/svg"><defs>
+    <symbol id="sparkle" viewBox="0 0 24 24"><path d="m12 3 2.4 6.6L21 12l-6.6 2.4L12 21l-2.4-6.6L3 12l6.6-2.4L12 3Z" fill="none" stroke="currentColor" stroke-width="1.3"/></symbol>
+    <symbol id="drop" viewBox="0 0 24 24"><path d="M12 3S6 10.5 6 14.2a6 6 0 0 0 12 0C18 10.5 12 3 12 3Z" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M9 14.5a3 3 0 0 0 3 3" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></symbol>
+    <symbol id="rotate" viewBox="0 0 24 24"><path d="M19 8a8 8 0 1 0 1 7M19 3v5h-5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="cone" viewBox="0 0 24 24"><path d="m7 11 5 10 5-10M5 11h14M6 8a3 3 0 0 1 2-3 4 4 0 0 1 8 0 3 3 0 0 1 2 3v3H6V8ZM9 15l6-2m-5-1 4 5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </defs></svg>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="Scoop Studio home"><svg class="brand-mark" viewBox="0 0 31 38" fill="none"><path d="m7 19 8.5 16L24 19" fill="#d3b588" stroke="#293e30" stroke-width="1.4" stroke-linejoin="round"/><path d="m10 23 10-3M12 28l5-1M10 20l9 10" stroke="#293e30" stroke-width="1"/><path d="M4 16c0-3 2-5 5-5a7 7 0 0 1 13 0c3 0 5 2 5 5v3H4v-3Z" fill="#e6a4b5" stroke="#293e30" stroke-width="1.4"/><path d="M10 8c0-4 5-6 8-3" stroke="#293e30" stroke-width="1.4" stroke-linecap="round"/></svg> scoop studio<span style="font-size:11px;align-self:flex-start;margin-top:4px">®</span></a>
+    <nav class="header-right" aria-label="Main navigation"><a href="#flavors">The flavors</a><button class="about-link" id="about-button">Our little studio ↗</button><span class="header-tag"><i class="status-dot"></i> A LITTLE SCOOP OF HAPPY</span></nav>
+  </header>
+  <main>
+    <section class="hero" aria-labelledby="hero-heading">
+      <div class="intro">
+        <div class="eyebrow">SOMETHING SWEET. SOMETHING SLOW.</div>
+        <h1 id="hero-heading">Made to<br> <em>melt.</em></h1>
+        <p class="intro-copy">A swirl of joy, a drizzle of chocolate,<br>and absolutely no reason to rush.<br>Make a little moment of your own.</p>
+        <div class="flavor-picker" id="flavors">
+          <span class="field-label">Pick your happy</span>
+          <div class="flavor-list" role="group" aria-label="Ice cream flavor">
+            <button class="flavor" data-flavor="strawberry" aria-label="Strawberry cloud" aria-pressed="true" title="Strawberry cloud"><span></span></button>
+            <button class="flavor" data-flavor="pistachio" aria-label="Pistachio daydream" aria-pressed="false" title="Pistachio daydream"><span></span></button>
+            <button class="flavor" data-flavor="vanilla" aria-label="Vanilla afternoon" aria-pressed="false" title="Vanilla afternoon"><span></span></button>
+          </div>
+          <p class="selected-flavor" aria-live="polite"><b id="flavor-name" style="font-weight:500">Strawberry cloud</b><span>with chocolate drizzle</span></p>
+        </div>
+        <button class="melt-button" id="melt-button" aria-pressed="false"><span id="melt-label">Make it melt</span><svg width="17" height="17"><use href="#drop"/></svg></button>
+        <p class="tiny-note">Go on. It's a little deliciously hypnotic.</p>
+      </div>
+      <div class="visual-stage">
+      <div id="scene" role="img" aria-label="Interactive 3D strawberry ice cream in a waffle cone with glossy flowing chocolate, a cherry, and rainbow sprinkles. Drag or use arrow keys to rotate." tabindex="0"><div class="scene-placeholder" id="scene-placeholder" role="status">Scooping up something lovely…</div></div>
+      <div class="edition"><div class="number"><span id="edition-number">01</span> <small>/ 03</small></div><div class="edition-label">THE EVERYDAY COLLECTION</div></div>
+      <div class="handwritten" aria-hidden="true">a cherry<br>on top, always.<svg width="61" height="57" viewBox="0 0 61 57" fill="none"><path d="M49 4c8 18-8 36-41 34m0 0 10-7M8 38l9 10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="orbit-label"><svg width="14" height="14"><use href="#rotate"/></svg> DRAG TO TAKE IT FOR A SPIN</div>
+      </div>
+      <div class="studio-controls" aria-label="Dessert controls">
+        <div class="control-row"><label id="sprinkles-label"><svg width="13" height="13"><use href="#sparkle"/></svg> Sprinkles</label><button class="switch" id="sprinkles" role="switch" aria-checked="true" aria-labelledby="sprinkles-label"></button></div>
+        <div class="control-row"><label id="rotation-label"><svg width="13" height="13"><use href="#rotate"/></svg> Auto-rotate</label><button class="switch" id="rotation" role="switch" aria-checked="true" aria-labelledby="rotation-label"></button></div>
+        <div class="speed-control"><div class="control-row"><label for="speed"><svg width="13" height="13"><use href="#drop"/></svg> Drizzle speed</label><output id="speed-output" for="speed">1×</output></div><input id="speed" type="range" min="0.25" max="3" step="0.25" value="1" aria-label="Drizzle speed"><div class="speed-labels"><span>TAKE IT SLOW</span><span>LET IT FLOW</span></div></div>
+        <button class="reset" id="reset"><svg width="11" height="11"><use href="#rotate"/></svg> A fresh start</button>
+      </div>
+    </section>
+    <section class="detail-strip" aria-label="The little details">
+      <div class="detail"><svg><use href="#cone"/></svg><div><strong>A little imperfect</strong><small>Lovingly shaped, scoop by scoop.</small></div></div>
+      <div class="detail"><svg><use href="#drop"/></svg><div><strong>Go with the flow</strong><small>Slow drips. Sweet little moments.</small></div></div>
+      <div class="detail"><svg><use href="#sparkle"/></svg><div><strong>Just for the joy of it</strong><small>No calories. All the good feelings.</small></div></div>
+      <div class="detail-last"><span>✳</span> Life's sweeter with a swirl.</div>
+    </section>
+  </main>
+  <footer class="site-footer"><span>© 2026 SCOOP STUDIO</span><span class="footer-right"><i class="status-dot"></i> MADE FOR YOUR LITTLE BREAK</span></footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <dialog id="about-dialog"><button class="close-dialog" aria-label="Close studio information">×</button><div class="eyebrow">WELCOME TO OUR LITTLE STUDIO</div><h2>A little scoop of happy.</h2><p>Scoop Studio is a tiny, playful place to take a breath. Pick a flavor, give your cone a spin, and watch the chocolate take its sweet time.</p><p>Every scoop, waffle, sprinkle, and drip is shaped from simple geometry. A small digital dessert, made for the joy of it.</p><button class="melt-button" id="back-to-studio" style="width:auto;margin-top:20px">Back to the sweet stuff ↗</button></dialog>
+  <script type="module">
+    // The scene and every dessert component are procedural; no model or texture files.
+    // Pinned CDN import keeps this project in one HTML file.
+    const $ = (id) => document.getElementById(id);
+    const placeholder = $('scene-placeholder');
+    const about = $('about-dialog');
+    $('about-button').addEventListener('click', () => about.showModal());
+    document.querySelector('.close-dialog').addEventListener('click', () => about.close());
+    $('back-to-studio').addEventListener('click', () => about.close());
+    about.addEventListener('click', (event) => { if (event.target === about) { const r = about.getBoundingClientRect(); if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) about.close(); } });
+    let toastTimer;
+    function toast(message) { $('toast').textContent = message; $('toast').classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => $('toast').classList.remove('show'), 2300); }
+
+    try {
+      const THREE = await import('https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js');
+      const container = $('scene');
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(33, 1, 0.1, 50);
+      camera.position.set(6.3, 5.4, 9.7);
+      camera.lookAt(0, 2.5, 0);
+      const renderer = new THREE.WebGLRenderer({ alpha:true, antialias:true, powerPreference:'high-performance' });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setClearColor(0x000000, 0);
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.2;
+      container.appendChild(renderer.domElement);
+      renderer.domElement.setAttribute('aria-hidden', 'true');
+      placeholder.classList.add('hidden');
+
+      scene.add(new THREE.HemisphereLight(0xfff8e8, 0x899d75, 2.4));
+      const key = new THREE.DirectionalLight(0xfff5e5, 3.4);
+      key.position.set(-3, 7, 5);
+      key.castShadow = true;
+      key.shadow.mapSize.set(1024, 1024);
+      Object.assign(key.shadow.camera, { left:-4, right:4, top:6, bottom:-4, near:0.5, far:20 });
+      key.shadow.normalBias = 0.045;
+      key.shadow.bias = -0.0002;
+      key.shadow.radius = 4;
+      scene.add(key);
+      const rim = new THREE.DirectionalLight(0xffebd9, 2);
+      rim.position.set(4, 5, -3); scene.add(rim);
+      const fill = new THREE.DirectionalLight(0xe2edff, 0.7);
+      fill.position.set(1, 3, 5); scene.add(fill);
+
+      // A tiny generated studio environment puts soft reflections into the glaze.
+      const envScene = new THREE.Scene();
+      envScene.background = new THREE.Color(0xa5a58f);
+      function softbox(x, y, z, sx, sy) {
+        const box = new THREE.Mesh(new THREE.PlaneGeometry(sx,sy), new THREE.MeshBasicMaterial({ color:0xffffff, side:THREE.DoubleSide }));
+        box.position.set(x,y,z); box.lookAt(0,2,0); envScene.add(box);
+      }
+      softbox(-4,6,4,3,5); softbox(5,5,-3,2,4); softbox(0,9,0,5,5);
+      const pmrem = new THREE.PMREMGenerator(renderer);
+      const environment = pmrem.fromScene(envScene, 0);
+      scene.environment = environment.texture;
+      pmrem.dispose();
+      envScene.traverse(obj => { if(obj.isMesh) { obj.geometry.dispose(); obj.material.dispose(); } });
+
+      const material = (color, options={}) => new THREE.MeshStandardMaterial({ color, roughness:0.75, ...options });
+      const pink = material(0xeb87a8, { flatShading:true, roughness:0.87 });
+      const pinkLight = material(0xf2a0b9, { flatShading:true, roughness:0.9 });
+      const coneMat = material(0xbc8046, { flatShading:true, roughness:1 });
+      const waffleMat = material(0xe2ad6d, { roughness:0.92 });
+      const chocolate = new THREE.MeshPhysicalMaterial({ color:0x46201c, roughness:0.22, metalness:0.02, clearcoat:1, clearcoatRoughness:0.14, envMapIntensity:1.1 });
+      const cherryMat = material(0xc84b50, { roughness:0.25, flatShading:true });
+      const greenMat = material(0x526b36, { roughness:0.8 });
+      const plateMat = material(0xfbf6e7, { roughness:0.35 });
+      const mesh = (geometry, mat, parent, x=0, y=0, z=0) => {
+        const m = new THREE.Mesh(geometry, mat); m.position.set(x,y,z); m.castShadow=true; m.receiveShadow=true; parent.add(m); return m;
+      };
+      const floor = mesh(new THREE.PlaneGeometry(30,30), new THREE.ShadowMaterial({ opacity:0.075 }), scene, 0, 0.01, 0);
+      floor.rotation.x=-Math.PI/2; floor.castShadow=false;
+      const plate = new THREE.Group(); scene.add(plate);
+      mesh(new THREE.CylinderGeometry(1.77,1.68,0.12,64), plateMat, plate, 0,0.12,0);
+      mesh(new THREE.CylinderGeometry(1.57,1.67,0.06,64), plateMat, plate, 0,0.2,0);
+      const plateRim = mesh(new THREE.TorusGeometry(1.65,0.075,8,64),plateMat,plate,0,0.22,0); plateRim.rotation.x=Math.PI/2;
+      const plateInset = mesh(new THREE.TorusGeometry(1.26,0.012,5,64),material(0xe2decd),plate,0,0.233,0); plateInset.rotation.x=Math.PI/2;
+
+      const dessert = new THREE.Group(); scene.add(dessert);
+      const body = new THREE.Group(); dessert.add(body);
+      // Tapered cylinder creates the cone; crossing helical ribs make real raised waffles.
+      mesh(new THREE.CylinderGeometry(0.73,0.035,2.07,48,1), coneMat, body,0,1.405,0);
+      for (const direction of [-1,1]) {
+        for (let strip=0; strip<16; strip++) {
+          const points=[];
+          for(let step=0;step<=40;step++) {
+            const v=0.025+step/40*0.975;
+            const a=strip/16*Math.PI*2+direction*v*3.6;
+            const r=0.035+0.695*v+0.009;
+            points.push(new THREE.Vector3(Math.cos(a)*r,0.37+v*2.07,Math.sin(a)*r));
+          }
+          mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points),40,0.016,4,false),waffleMat,body);
+        }
+      }
+      const coneLip=mesh(new THREE.TorusGeometry(0.724,0.035,6,48),waffleMat,body,0,2.44,0); coneLip.rotation.x=Math.PI/2;
+
+      const scoops = new THREE.Group(); body.add(scoops);
+      function scoop(radius,x,y,z,mat,seed) {
+        const geometry=new THREE.SphereGeometry(radius,22,14);
+        const pos=geometry.attributes.position;
+        // Deterministic surface ripples retain clean low-poly facets at the seam.
+        for(let i=0;i<pos.count;i++) {
+          const vx=pos.getX(i), vy=pos.getY(i), vz=pos.getZ(i);
+          const ripple=1+0.025*Math.sin(vx*11+seed)*Math.sin(vy*9+2)*Math.cos(vz*10+seed);
+          pos.setXYZ(i,vx*ripple,vy*ripple,vz*ripple);
+        }
+        geometry.computeVertexNormals();
+        return mesh(geometry,mat,scoops,x,y,z);
+      }
+      const bottomScoop = scoop(0.95,0,2.82,0,pink,2); bottomScoop.scale.y=0.84;
+      for(let i=0;i<9;i++) { const a=i/9*Math.PI*2; const lump=scoop(0.24,Math.cos(a)*0.74,2.51,Math.sin(a)*0.74,i%3===0?pinkLight:pink,i); lump.scale.set(1,0.7,1); }
+      const topScoop = scoop(0.77,-0.045,3.74,0,pinkLight,6); topScoop.scale.y=0.92;
+      for(let i=0;i<7;i++) { const a=i/7*Math.PI*2; const lump=scoop(0.18,Math.cos(a)*0.61-0.045,3.35,Math.sin(a)*0.61,pinkLight,i+5); lump.scale.y=0.65; }
+      // Two small swirls beneath the glaze read as hand-shaped ice cream folds.
+      for(let i=0;i<2;i++) {
+        const swirl=mesh(new THREE.TorusGeometry(0.58-i*0.11,0.09,6,32,Math.PI*1.55),pinkLight,scoops,-0.045,3.98+i*0.17,0);
+        swirl.rotation.x=Math.PI/2-0.12; swirl.rotation.z=i*2;
+      }
+
+      // A continuously deformed sphere cap makes the icing one seamless flowing skin.
+      const capColumns=96, capRows=20;
+      const capGeometry=new THREE.BufferGeometry();
+      const capVertices=new Float32Array((capColumns+1)*(capRows+1)*3);
+      const capIndices=[];
+      for(let y=0;y<capRows;y++) for(let x=0;x<capColumns;x++) {
+        const a=y*(capColumns+1)+x,b=a+capColumns+1;
+        capIndices.push(a,b,a+1,b,b+1,a+1);
+      }
+      capGeometry.setAttribute('position',new THREE.BufferAttribute(capVertices,3));
+      capGeometry.setIndex(capIndices);
+      const cap=mesh(capGeometry,chocolate,body,-0.045,3.74,0);
+      cap.material.side=THREE.DoubleSide;
+      const drips=[{a:0.28,d:0.73,w:0.1},{a:1.12,d:0.93,w:0.12},{a:2.14,d:0.62,w:0.12},{a:3.05,d:0.97,w:0.13},{a:4.1,d:0.53,w:0.11},{a:4.87,d:0.84,w:0.11},{a:5.63,d:0.72,w:0.12}];
+      let flowTime=0;
+      function updateGlaze(t) {
+        for(let x=0;x<=capColumns;x++) {
+          const angle=x/capColumns*Math.PI*2;
+          let edge=1.28+0.055*Math.sin(angle*5+t*0.2);
+          for(let j=0;j<drips.length;j++) {
+            const drip=drips[j];
+            const diff=Math.atan2(Math.sin(angle-drip.a),Math.cos(angle-drip.a));
+            const advance=0.86+0.14*Math.sin(t*0.7+j*1.4);
+            edge+=drip.d*advance*Math.exp(-diff*diff/(2*drip.w*drip.w));
+          }
+          for(let y=0;y<=capRows;y++) {
+            const theta=y/capRows*edge;
+            const r=0.793+0.005*Math.sin(angle*6+theta*7+t*0.25);
+            const i=(y*(capColumns+1)+x)*3;
+            capVertices[i]=Math.sin(theta)*Math.cos(angle)*r;
+            capVertices[i+1]=Math.cos(theta)*r*0.92;
+            capVertices[i+2]=Math.sin(theta)*Math.sin(angle)*r;
+          }
+        }
+        capGeometry.attributes.position.needsUpdate=true;
+        capGeometry.computeVertexNormals();
+        if(!capGeometry.boundingSphere) capGeometry.computeBoundingSphere();
+      }
+      updateGlaze(0);
+
+      // The cherry, curved stem, and leaf are also primitives.
+      const cherry=mesh(new THREE.SphereGeometry(0.205,12,9),cherryMat,body,0.045,4.63,0.04);
+      cherry.scale.set(1,0.9,1);
+      const stemCurve=new THREE.CatmullRomCurve3([new THREE.Vector3(0.06,4.78,0.035),new THREE.Vector3(0.075,4.98,0.025),new THREE.Vector3(0.23,5.12,0.02),new THREE.Vector3(0.32,5.13,0.025)]);
+      mesh(new THREE.TubeGeometry(stemCurve,14,0.016,5,false),greenMat,body);
+      const leaf=mesh(new THREE.SphereGeometry(0.1,6,4),greenMat,body,0.24,5.06,0.025); leaf.scale.set(1.7,0.25,0.55); leaf.rotation.z=0.5;
+
+      // Seeded sprinkling keeps flavors visually consistent.
+      let randomSeed=17;
+      function random() { randomSeed=(randomSeed*16807)%2147483647; return (randomSeed-1)/2147483646; }
+      const sprinkles=new THREE.Group(); body.add(sprinkles);
+      const sprinkleColors=[0xf4d785,0xf2eece,0xb1cd9b,0xe8819c,0xbfadd3];
+      const sprinkleMats=sprinkleColors.map(c=>material(c,{roughness:0.7}));
+      const sprinkleGeometry=new THREE.CylinderGeometry(0.022,0.022,0.105,5);
+      const up=new THREE.Vector3(0,1,0);
+      for(let i=0;i<78;i++) {
+        const top=i<39;
+        const azimuth=random()*Math.PI*2;
+        const polar=top?0.2+random()*1.05:0.4+random()*1.45;
+        const normal=new THREE.Vector3(Math.sin(polar)*Math.cos(azimuth),Math.cos(polar),Math.sin(polar)*Math.sin(azimuth));
+        const r=top?0.809:0.966;
+        const sprinkle=mesh(sprinkleGeometry,sprinkleMats[i%5],sprinkles,normal.x*r+(top?-0.045:0),normal.y*r*(top?0.92:0.84)+(top?3.74:2.82),normal.z*r);
+        const tangent=new THREE.Vector3(-Math.sin(azimuth),0,Math.cos(azimuth));
+        tangent.applyAxisAngle(normal,random()*Math.PI*2);
+        sprinkle.quaternion.setFromUnitVectors(up,tangent);
+      }
+
+      // A fixed particle pool: falling chocolate droplets and glistening star bursts.
+      const particleGroup=new THREE.Group(); body.add(particleGroup);
+      const droplets=[];
+      const dropletGeometry=new THREE.SphereGeometry(0.044,7,5);
+      for(let i=0;i<20;i++) {
+        const m=mesh(dropletGeometry,chocolate,particleGroup); m.castShadow=false; m.visible=false;
+        droplets.push({mesh:m,age:random()*5,life:1.9+random(),angle:drips[i%drips.length].a,active:false});
+      }
+      const glints=[];
+      const glintMaterial=new THREE.MeshBasicMaterial({color:0xfff6cc,transparent:true,opacity:0.8,depthWrite:false});
+      const glintGeometry=new THREE.OctahedronGeometry(0.029);
+      for(let i=0;i<16;i++) {
+        const m=mesh(glintGeometry,glintMaterial,particleGroup); m.castShadow=false; m.receiveShadow=false;
+        glints.push({mesh:m,phase:random()*Math.PI*2,a:random()*Math.PI*2,r:0.83+random()*0.12,y:3.35+random()*1.15});
+      }
+      const puddle = mesh(new THREE.SphereGeometry(0.27,18,8),chocolate,plate,0.25,0.25,0.11); puddle.scale.set(1.6,0.035,0.9);
+      const littleDrop=mesh(new THREE.SphereGeometry(0.07,10,6),chocolate,plate,-0.61,0.25,0.47); littleDrop.scale.y=0.14;
+
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      const state={ flavor:'strawberry', melting:false, rotation:!reducedMotion.matches, sprinkles:true, speed:1, dragging:false, rotationY:-0.25, tilt:0 };
+      $('rotation').setAttribute('aria-checked',String(state.rotation));
+      const flavors={
+        strawberry:{name:'Strawberry cloud',color:0xeb87a8,light:0xf2a0b9,edition:'01'},
+        pistachio:{name:'Pistachio daydream',color:0xb4cc8d,light:0xd0dfa9,edition:'02'},
+        vanilla:{name:'Vanilla afternoon',color:0xf3d9a2,light:0xffe9ba,edition:'03'}
+      };
+      function chooseFlavor(flavor, notify=true) {
+        state.flavor=flavor;
+        const f=flavors[flavor];
+        pink.color.setHex(f.color); pinkLight.color.setHex(f.light);
+        document.querySelectorAll('.flavor').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.flavor===flavor)));
+        $('flavor-name').textContent=f.name;
+        $('edition-number').textContent=f.edition;
+        container.setAttribute('aria-label',`Interactive 3D ${f.name.toLowerCase()} ice cream in a waffle cone with glossy flowing chocolate and a cherry. Drag or use arrow keys to rotate.`);
+        if(notify) toast(`One ${f.name.toLowerCase()}, just for you.`);
+      }
+      document.querySelectorAll('.flavor').forEach(button=>button.addEventListener('click',()=>chooseFlavor(button.dataset.flavor)));
+      function setMelting(value) {
+        state.melting=value;
+        $('melt-button').setAttribute('aria-pressed',String(value));
+        $('melt-label').textContent=value?'Keep it cool':'Make it melt';
+      }
+      $('melt-button').addEventListener('click',()=>{setMelting(!state.melting);toast(state.melting?'Let it flow. Take a little breather.':'Back to the slow, sweet life.');});
+      $('sprinkles').addEventListener('click',()=>{state.sprinkles=!state.sprinkles;sprinkles.visible=state.sprinkles;$('sprinkles').setAttribute('aria-checked',String(state.sprinkles));});
+      $('rotation').addEventListener('click',()=>{state.rotation=!state.rotation;$('rotation').setAttribute('aria-checked',String(state.rotation));});
+      $('speed').addEventListener('input',()=>{state.speed=Number($('speed').value);$('speed-output').value=`${state.speed}×`;});
+      $('reset').addEventListener('click',()=>{
+        chooseFlavor('strawberry',false);setMelting(false);state.speed=1;state.rotation=!reducedMotion.matches;state.sprinkles=true;state.rotationY=-0.25;state.tilt=0;
+        $('speed').value='1';$('speed-output').value='1×';sprinkles.visible=true;
+        $('sprinkles').setAttribute('aria-checked','true');$('rotation').setAttribute('aria-checked',String(state.rotation));
+        flowTime=0; droplets.forEach(d=>{d.active=false;d.age=random()*5;d.mesh.visible=false;});
+        toast('A fresh scoop. A fresh little start.');
+      });
+
+      let lastX=0,lastY=0,startX=0,startY=0,pendingDrag=false;
+      container.addEventListener('pointerdown',event=>{
+        if(event.button!==0)return;
+        pendingDrag=true;state.dragging=event.pointerType==='mouse';startX=lastX=event.clientX;startY=lastY=event.clientY;
+        container.setPointerCapture(event.pointerId);
+      });
+      container.addEventListener('pointermove',event=>{
+        if(!pendingDrag)return;
+        if(!state.dragging&&Math.abs(event.clientX-startX)>Math.abs(event.clientY-startY)+5)state.dragging=true;
+        if(state.dragging){state.rotationY+=(event.clientX-lastX)*0.009;state.tilt=THREE.MathUtils.clamp(state.tilt+(event.clientY-lastY)*0.002,-0.12,0.12);}
+        lastX=event.clientX;lastY=event.clientY;
+      });
+      function endDrag(){state.dragging=false;pendingDrag=false;}
+      container.addEventListener('pointerup',endDrag);container.addEventListener('pointercancel',endDrag);container.addEventListener('lostpointercapture',endDrag);
+      container.addEventListener('keydown',event=>{
+        if(event.key==='ArrowLeft'||event.key==='ArrowRight'){event.preventDefault();state.rotationY+=(event.key==='ArrowRight'?0.18:-0.18);}
+        if(event.key==='ArrowUp'||event.key==='ArrowDown'){event.preventDefault();state.tilt=THREE.MathUtils.clamp(state.tilt+(event.key==='ArrowDown'?0.025:-0.025),-0.12,0.12);}
+      });
+
+      function resize(){
+        const w=container.clientWidth,h=container.clientHeight;
+        renderer.setSize(w,h); camera.aspect=w/h;
+        camera.fov=w/h<0.8?39:33;
+        camera.updateProjectionMatrix();
+      }
+      const resizeObserver=new ResizeObserver(resize);resizeObserver.observe(container);resize();
+      reducedMotion.addEventListener('change',event=>{if(event.matches){state.rotation=false;$('rotation').setAttribute('aria-checked','false');}});
+      let lastTime=0,elapsed=0,frame=0;
+      function animate(now){
+        const dt=Math.min((now-lastTime)/1000,0.05);lastTime=now;
+        if(document.hidden)return;
+        const motionAllowed=!reducedMotion.matches||state.melting;
+        const rate=state.speed*(state.melting?3.8:1);
+        if(motionAllowed){elapsed+=dt;flowTime+=dt*rate;}
+        if(state.rotation&&!state.dragging)state.rotationY+=dt*0.13;
+        dessert.rotation.y=state.rotationY;
+        dessert.rotation.z=state.tilt+(motionAllowed?Math.sin(elapsed*1.3)*0.014:0);
+        scoops.scale.y=1+(motionAllowed?Math.sin(elapsed*1.7)*0.006:0);
+        if(frame++%2===0&&motionAllowed)updateGlaze(flowTime);
+        puddle.scale.x=1.6+(state.melting?Math.sin(flowTime*0.3)*0.25:0);
+        for(let i=0;i<droplets.length;i++){
+          const p=droplets[i];
+          if(!motionAllowed){p.mesh.visible=false;continue;}
+          p.age+=dt*(state.melting?1.8:0.55)*state.speed;
+          if(!p.active&&p.age>3.5+i*0.18){p.active=true;p.age=0;}
+          if(p.active){
+            const progress=p.age/p.life;
+            const r=0.69+progress*0.18;
+            p.mesh.position.set(Math.cos(p.angle)*r-0.045,3.24-progress*2.98,Math.sin(p.angle)*r);
+            p.mesh.scale.set(0.75,1.2+Math.sin(progress*Math.PI)*1.7,0.75);
+            p.mesh.visible=true;
+            if(progress>=1){p.active=false;p.age=0;p.mesh.visible=false;}
+          }
+        }
+        for(const g of glints){
+          g.mesh.visible=motionAllowed;
+          const pulse=Math.max(0,Math.sin(elapsed*1.4+g.phase));
+          g.mesh.position.set(Math.cos(g.a)*g.r-0.045,g.y+Math.sin(elapsed*0.7+g.phase)*0.055,Math.sin(g.a)*g.r);
+          g.mesh.scale.set(pulse*0.65,pulse*2,pulse*0.65);
+          g.mesh.rotation.y=elapsed*0.7+g.phase;
+        }
+        renderer.render(scene,camera);
+      }
+      renderer.setAnimationLoop(animate);
+      renderer.domElement.addEventListener('webglcontextlost',event=>{event.preventDefault();placeholder.textContent='The scoop needs a moment. Reload to give it a fresh start.';placeholder.classList.remove('hidden');});
+      renderer.domElement.addEventListener('webglcontextrestored',()=>placeholder.classList.add('hidden'));
+      // Read-only scene state is useful when verifying interactions and animation.
+      window.scoopStudio={get state(){return {...state};},get stats(){return{flowTime,drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,particles:droplets.filter(p=>p.mesh.visible).length};}};
+    } catch(error) {
+      console.error('Scoop Studio could not create the 3D scene:',error);
+      placeholder.classList.remove('hidden');
+      placeholder.textContent='The scoop couldn’t load. Check your internet connection and reload. This little studio needs a browser with WebGL.';
+      placeholder.style.padding='0 30px';
+      $('melt-button').disabled=true;
+      document.querySelectorAll('.flavor,.switch,#speed,#reset').forEach(el=>el.disabled=true);
+    }
+  </script>
+</body>
+</html>
